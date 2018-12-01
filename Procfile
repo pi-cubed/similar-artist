@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/similarArtist -Dhttp.port=$PORT
+web: target/universal/stage/bin/similarartist -Dhttp.port=$PORT
