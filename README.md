@@ -1,9 +1,8 @@
-# similarArtist #
+# similar-artist #
 
 ## Build & Run ##
 
 ```sh
-$ cd similarartist
 $ sbt
 > jetty:start
 > browse

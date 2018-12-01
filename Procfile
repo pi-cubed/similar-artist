@@ -1,0 +1,1 @@
+web: target/universal/stage/bin/similarArtist -Dhttp.port=$PORT
