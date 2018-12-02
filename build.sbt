@@ -17,6 +17,8 @@ libraryDependencies ++= Seq(
   "org.neo4j.driver" % "neo4j-java-driver" % "1.7.1"
 )
 
+mainClass in (Compile, run) := Some("JettyLauncher")
+
 enablePlugins(SbtTwirl)
 enablePlugins(ScalatraPlugin)
 enablePlugins(JavaAppPackaging)
