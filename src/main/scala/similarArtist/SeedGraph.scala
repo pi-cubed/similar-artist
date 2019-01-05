@@ -6,29 +6,30 @@ import com.wrapper.spotify.model_objects.specification.PlaylistSimplified
 import com.wrapper.spotify.model_objects.specification.PlaylistTrack
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified
 import com.wrapper.spotify.exceptions.detailed.NotFoundException
-import org.neo4j.driver.v1._
+import org.neo4j.driver.v1.Values.parameters
+import java.lang.AutoCloseable
 
 
 object SeedGraph {
 	
 	val spotify = getSpotify
 
-
-	val dbConfig = AuthTokens.basic(
-		sys.env("GRAPHENEDB_BOLT_USER"), sys.env("GRAPHENEDB_BOLT_PASSWORD")
-	)
-	val dbDriver = GraphDatabase.driver(sys.env("GRAPHENEDB_BOLT_URL"), dbConfig)
+	val database = new Database()
 
 
-  def main(args: Array[String]) {
-  	val artists = getSeedArtists
+  	def main(args: Array[String]) {
+  		try {
 
-  	println("found " + seeds.length + " seed artists")
+		  	val artists = getSeedArtists
 
-  	mergeArtists(artists)
+		  	println("found " + artists.length + " seed artists")
 
-  	dbDriver.close()
-  }
+		  	mergeArtists(artists)
+
+		} finally {
+		  	database.close
+		}
+	}
 
 
 	def getSpotify = {
@@ -49,11 +50,11 @@ object SeedGraph {
 
 
 	def getSeedArtists: Array[ArtistSimplified] = {
-		val categories = getCategories.take(1)
+		val categories = getCategories
 
-		val playlists = getPlaylists(categories).take(1)
+		val playlists = getPlaylists(categories)
 
-		val tracks = getTracks(playlists).take(1)
+		val tracks = getTracks(playlists)
 
 		getArtists(tracks)
 	}
@@ -102,8 +103,14 @@ object SeedGraph {
 
 	def mergeArtists(artists: Array[ArtistSimplified]) = {
 		println("merging artists into db")
+		database.withTransaction { tx =>
+			artists.foreach { artist =>
+				tx.run(
+					"MERGE (:Artist {name: {name}, spotifyId: {id}})",
+					parameters("name", artist.getName, "id", artist.getId)
+				)
+			}
+		}
 	}
 
 }
-
-
