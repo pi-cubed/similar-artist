@@ -1,4 +1,4 @@
-package similarArtist
+package similar_artist
 
 import org.scalatra._
 
