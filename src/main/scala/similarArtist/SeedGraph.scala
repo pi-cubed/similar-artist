@@ -8,6 +8,7 @@ import com.wrapper.spotify.model_objects.specification.ArtistSimplified
 import com.wrapper.spotify.exceptions.detailed.NotFoundException
 import org.neo4j.driver.v1.Values.parameters
 import java.lang.AutoCloseable
+import collection.breakOut
 
 
 object SeedGraph {
@@ -94,11 +95,11 @@ object SeedGraph {
 		)
 	}
 
-	def getArtists(tracks: Array[PlaylistTrack]) = {
+	def getArtists(tracks: Array[PlaylistTrack]): Array[ArtistSimplified] = {
 		println("getting track artists")
 		tracks.flatMap(pt => Option(pt.getTrack))
 			.flatMap(_.getArtists)
-			.distinct
+			.groupBy(_.getId).map(_._2.head)(breakOut)
 	}
 
 	def mergeArtists(artists: Array[ArtistSimplified]) = {
