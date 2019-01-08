@@ -1,4 +1,4 @@
-import similarArtist._
+import similar_artist._
 import org.scalatra._
 import javax.servlet.ServletContext
 
